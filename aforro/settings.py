@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'orders',
     'stores',
     'search',
+    "rest_framework",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -133,12 +135,23 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": (
-        "rest_framework.pagination.PageNumberPagination"
-    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
+
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Aforro Backend API",
+    "DESCRIPTION": "Backend API for Aforro assignment",
+    "VERSION": "1.0.0",
 }
 
 REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")

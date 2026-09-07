@@ -7,9 +7,14 @@ from stores.models import Store, Inventory
 from .models import Order, OrderItem
 from .serializers import OrderSerializer
 
+from drf_spectacular.utils import extend_schema
+from .serializers import OrderSerializer, OrderCreateSerializer
+
 
 class OrderCreateAPIView(APIView):
-
+    @extend_schema(
+        request=OrderCreateSerializer,
+        responses=OrderSerializer)
     def post(self, request):
         store_id = request.data.get("store_id")
         items = request.data.get("items")

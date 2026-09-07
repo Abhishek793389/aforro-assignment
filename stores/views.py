@@ -7,6 +7,7 @@ from .serializers import StoreSerializer,InventorySerializer
 from django.db.models import Count
 from orders.models import Order
 from orders.serializers import OrderListSerializer
+from drf_spectacular.utils import extend_schema
 
 
 class StoreListCreateAPIView(APIView):
@@ -18,6 +19,9 @@ class StoreListCreateAPIView(APIView):
 
         return Response(serializer.data)
 
+    @extend_schema(
+    request=StoreSerializer,
+    responses=StoreSerializer)
     def post(self, request):
         serializer = StoreSerializer(data=request.data)
 

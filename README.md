@@ -1,108 +1,53 @@
 # Aforro Backend Assignment
 
-A small Django REST API demonstrating data modeling, REST API design, PostgreSQL, Redis caching, Celery asynchronous processing, query optimization, testing, and Docker.
-
-## Tech Stack
-
-* Python
-* Django
-* Django REST Framework
-* PostgreSQL
-* Redis
-* Celery
-* Docker & Docker Compose
-
-## Project Structure
-
-```text
-aforro/
-├── aforro/
-├── orders/
-├── products/
-├── search/
-├── stores/
-├── test/
-├── manage.py
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-└── .env
-```
-
-## Local Setup
-
-Create and activate a virtual environment:
+## 1. Project Setup and Run Instructions
 
 ```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Configure PostgreSQL in `.env`.
-
-Run migrations:
-
-```bash
-python manage.py migrate
-```
-
-Start Django:
-
-```bash
-python manage.py runserver
-```
-
-## Seed Data
-
-Generate sample data:
-
-```bash
-python manage.py seed_data
-```
-
-The command creates:
-
-* 10 categories
-* 1000 products
-* 20 stores
-* 300 inventory products for each store
-
-## Docker Setup
-
-Build and start all services:
-
-```bash
+git clone https://github.com/Abhishek793389/aforro-assignment.git
+cd aforro
 docker compose up --build
 ```
 
-Services:
-
-* Django application
-* PostgreSQL
-* Redis
-* Celery worker
-
-Stop the services:
+Run seed data:
 
 ```bash
-docker compose down
+docker compose exec web python manage.py seed_data
 ```
 
-## API Endpoints
+Swagger UI:
+
+```text
+http://localhost:8000/api/docs/
+```
+Postman collection
+
+```text
+Open Postman/file/import/select-Aforro-API.postman_collection.json 
+
+It will import all api and you can test.
+```
+
+## 2. API Endpoint Details
+
+| Method | Endpoint                            | Description                |
+| ------ | ----------------------------------- | -------------------------- |
+| POST   | `/api/orders/`                      | Create an order            |
+| GET    | `/api/stores/{store_id}/orders/`    | List store orders          |
+| GET    | `/api/stores/{store_id}/inventory/` | Get store inventory        |
+| GET    | `/api/search/products/`             | Search and filter products |
+| GET    | `/api/search/suggest/?q=xxx`        | Product autocomplete       |
+| GET    | `/api/products/`                    | List products              |
+| POST   | `/api/products/`                    | Create product             |
+| GET    | `/api/products/categories/`         | List categories            |
+| POST   | `/api/products/categories/`         | Create category            |
+| GET    | `/api/stores/`                      | List stores                |
+| POST   | `/api/stores/`                      | Create store               |
+
+## 3. Request and Response Formats
 
 ### Create Order
 
-```http
-POST /api/orders/
-```
-
-Example:
+**Request:**
 
 ```json
 {
@@ -116,144 +61,66 @@ Example:
 }
 ```
 
+**Response:**
 
-### Store Orders
-
-```http
-GET /api/stores/<store_id>/orders/
+```json
+{
+    "id": 1,
+    "store": 1,
+    "status": "CONFIRMED",
+    "created_at": "2026-09-07T10:00:00Z",
+    "items": [
+        {
+            "product_id": 1,
+            "quantity_requested": 2
+        }
+    ]
+}
 ```
 
-Returns orders for a store, newest first.
+### Create Product
 
-### Store Inventory
+**Request:**
 
-```http
-GET /api/stores/<store_id>/inventory/
+```json
+{
+    "title": "Laptop",
+    "description": "Business laptop",
+    "price": "50000.00",
+    "category": 1
+}
 ```
 
-Returns:
+### Create Category
 
-* Product title
-* Price
-* Category
-* Quantity
+**Request:**
 
-### Product Search
-
-```http
-GET /api/search/products/
+```json
+{
+    "name": "Electronics"
+}
 ```
 
-Example:
+### Create Store
 
-```text
-/api/search/products/?q=laptop
+**Request:**
+
+```json
+{
+    "name": "Store 1",
+    "location": "Delhi"
+}
 ```
 
-Supported filters include:
+## 4. Database / Setup Requirements
 
-```text
-q
-category
-min_price
-max_price
-store_id
-in_stock
-sort
-```
-
-### Product Suggestions
-
-```http
-GET /api/search/suggest/?q=lap
-```
-
-The suggestion endpoint requires at least 3 characters and returns up to 10 product titles.
-
-### Products
-
-```http
-GET /api/products/
-POST /api/products/
-```
-
-### Categories
-
-```http
-GET /api/products/categories/
-POST /api/products/categories/
-```
-
-### Stores
-
-```http
-GET /api/stores/
-POST /api/stores/
-```
-
-## Redis Caching
-
-Redis is used to cache product search results.
-
-Search responses are cached for 5 minutes.
-
-The cache is cleared when a new product is created so that product search results remain up to date.
-
-## Celery
-
-Celery uses Redis as its message broker.
-
-After a confirmed order is successfully committed to the database, an asynchronous confirmation task is triggered:
-
-```python
-send_order_confirmation.delay(order.id)
-```
-
-The task is triggered using `transaction.on_commit()` so it only runs after the database transaction succeeds.
-
-Run the Celery worker locally:
-
-```bash
-celery -A aforro worker --loglevel=info --pool=solo
-```
-
-With Docker, the Celery worker is started automatically by Docker Compose.
-
-## Query Optimization
-
-The project uses Django ORM optimization techniques including:
-
-* `select_related()` for related foreign-key data
-* `annotate()` and `Count()` for order item counts
-* `bulk_create()` for seed data and order items
-* `select_for_update()` when checking inventory during order creation
-
-These reduce unnecessary database queries and help prevent N+1 query problems.
-
-## Tests
-
-Three tests are included:
-
-1. Successful order creation
-2. Insufficient stock rejection
-3. Store inventory API
-
-Run tests:
-
-```bash
-python manage.py test test
-```
-
-## Running the Project
-
-For Docker:
-
-```bash
-docker compose up --build
-```
-
-Then the API is available at:
-
-```text
-http://localhost:8000/
-```
+* PostgreSQL is used as the database.
+* Redis is used for caching and Celery.
+* Celery uses Redis as the broker.
+* Docker Compose runs Django, PostgreSQL, Redis, and Celery.
+* Database configuration is provided through environment variables. so create a .env file and metion these
+    POSTGRES_DB=aforro
+    POSTGRES_USER="postgres"
+    POSTGRES_PASSWORD="password"
+    POSTGRES_HOST=localhost
+    POSTGRES_PORT=5432

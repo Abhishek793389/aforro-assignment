@@ -4,6 +4,7 @@ from rest_framework import status
 from django.core.cache import cache
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
+from drf_spectacular.utils import extend_schema
 
 
 class CategoryListCreateAPIView(APIView):
@@ -13,6 +14,9 @@ class CategoryListCreateAPIView(APIView):
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+    request=CategorySerializer,
+    responses=CategorySerializer)
     def post(self, request):
         serializer = CategorySerializer(data=request.data)
 
@@ -35,6 +39,9 @@ class ProductListCreateAPIView(APIView):
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+    request=ProductSerializer,
+    responses=ProductSerializer)
     def post(self, request):
         serializer = ProductSerializer(data=request.data)
 

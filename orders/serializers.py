@@ -26,3 +26,7 @@ class OrderListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ["id", "status", "created_at", "total_items",]
+
+class OrderCreateSerializer(serializers.Serializer):
+    store_id = serializers.IntegerField()
+    items = OrderItemSerializer(many=True)
