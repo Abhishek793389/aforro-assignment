@@ -4,14 +4,6 @@ from .views import ProductSearchAPIView, ProductSuggestAPIView
 
 
 urlpatterns = [
-    path(
-        "products/",
-        ProductSearchAPIView.as_view(),
-        name="product-search"
-    ),
-    path(
-        "suggest/",
-        ProductSuggestAPIView.as_view(),
-        name="product-suggest"
-    ),
+    path("products/",ProductSearchAPIView.as_view(),name="product-search"),
+    path("suggest/",ProductSuggestAPIView.as_view(),name="product-suggest"),
 ]

@@ -14,10 +14,7 @@ class StoreListCreateAPIView(APIView):
     def get(self, request):
         stores = Store.objects.all()
 
-        serializer = StoreSerializer(
-            stores,
-            many=True
-        )
+        serializer = StoreSerializer(stores,many=True)
 
         return Response(serializer.data)
 
@@ -29,13 +26,11 @@ class StoreListCreateAPIView(APIView):
 
             return Response(
                 StoreSerializer(store).data,
-                status=status.HTTP_201_CREATED
-            )
+                status=status.HTTP_201_CREATED)
 
         return Response(
             serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
+            status=status.HTTP_400_BAD_REQUEST)
 
 class StoreInventoryAPIView(APIView):
 
@@ -44,18 +39,10 @@ class StoreInventoryAPIView(APIView):
         if not Store.objects.filter(id=store_id).exists():
             return Response(
                 {"error": "Store not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
+                status=status.HTTP_404_NOT_FOUND)
 
-        inventory = (
-            Inventory.objects
-            .filter(store_id=store_id)
-            .select_related("product", "product__category")
-            .order_by("product__title")
-        )
-
+        inventory = (Inventory.objects.filter(store_id=store_id).select_related("product", "product__category").order_by("product__title"))
         serializer = InventorySerializer(inventory, many=True)
-
         return Response(serializer.data)
 
 class StoreOrdersAPIView(APIView):
@@ -65,16 +52,8 @@ class StoreOrdersAPIView(APIView):
         if not Store.objects.filter(id=store_id).exists():
             return Response(
                 {"error": "Store not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
+                status=status.HTTP_404_NOT_FOUND)
 
-        orders = (
-            Order.objects
-            .filter(store_id=store_id)
-            .annotate(total_items=Count("items"))
-            .order_by("-created_at")
-        )
-
+        orders = (Order.objects.filter(store_id=store_id).annotate(total_items=Count("items")).order_by("-created_at"))
         serializer = OrderListSerializer(orders, many=True)
-
         return Response(serializer.data)

@@ -14,21 +14,13 @@ class InventoryTest(TestCase):
         product = Product.objects.create(
             title="Running Shoes",
             price=2000,
-            category=category
-        )
+            category=category)
         store = Store.objects.create(
             name="Store 1",
-            location="Delhi"
-        )
-        Inventory.objects.create(
-            store=store,
-            product=product,
-            quantity=20
-        )
+            location="Delhi")
+        Inventory.objects.create(store=store,product=product,quantity=20)
 
-        response = client.get(
-            f"/api/stores/{store.id}/inventory/"
-        )
+        response = client.get(f"/api/stores/{store.id}/inventory/")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data[0]["quantity"], 20)

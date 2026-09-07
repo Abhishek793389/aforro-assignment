@@ -18,6 +18,5 @@ class ProductSerializer(serializers.ModelSerializer):
             "description",
             "price",
             "category",
-            "created_at",
-        ]
+            "created_at",]
         read_only_fields = ["id", "created_at"]

@@ -33,8 +33,7 @@ class ProductSearchAPIView(APIView):
             products = products.filter(
                 Q(title__icontains=keyword) |
                 Q(description__icontains=keyword) |
-                Q(category__name__icontains=keyword)
-            )
+                Q(category__name__icontains=keyword))
 
         if category:
             products = products.filter(category_id=category)
@@ -47,13 +46,11 @@ class ProductSearchAPIView(APIView):
 
         if store_id:
             products = products.filter(
-                inventory__store_id=store_id
-            )
+                inventory__store_id=store_id)
 
         if in_stock == "true":
             products = products.filter(
-                inventory__quantity__gt=0
-            )
+                inventory__quantity__gt=0)
 
         if sort == "price":
             products = products.order_by("price")
@@ -71,19 +68,11 @@ class ProductSearchAPIView(APIView):
 
         page = paginator.paginate_queryset(products, request)
 
-        serializer = ProductSearchSerializer(
-            page,
-            many=True
-        )
+        serializer = ProductSearchSerializer(page,many=True)
 
         response = paginator.get_paginated_response(serializer.data)
 
-        cache.set(
-            cache_key,
-            response.data,
-            60 * 5
-        )
-
+        cache.set(cache_key,response.data, 60 * 5)
         return response
 
 
@@ -98,19 +87,7 @@ class ProductSuggestAPIView(APIView):
             }, status=400)
 
         products = (
-            Product.objects
-            .filter(title__icontains=query)
-            .annotate(
-                priority=Case(
-                    When(title__istartswith=query, then=1),
-                    default=2,
-                    output_field=IntegerField()
-                )
-            )
-            .order_by("priority", "title")
-            .values_list("title", flat=True)[:10]
-        )
+            Product.objects.filter(title__icontains=query).annotate(priority=Case(When(title__istartswith=query, then=1),default=2,output_field=IntegerField())).order_by("priority", "title").values_list("title", flat=True)[:10])
 
         return Response({
-            "results": list(products)
-        })
+            "results": list(products)})

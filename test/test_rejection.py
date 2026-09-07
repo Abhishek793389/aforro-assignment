@@ -11,20 +11,9 @@ class OrderRejectionTest(TestCase):
         client = APIClient()
 
         category = Category.objects.create(name="Books")
-        product = Product.objects.create(
-            title="Book",
-            price=500,
-            category=category
-        )
-        store = Store.objects.create(
-            name="Store 1",
-            location="Delhi"
-        )
-        Inventory.objects.create(
-            store=store,
-            product=product,
-            quantity=2
-        )
+        product = Product.objects.create(title="Book",price=500,category=category)
+        store = Store.objects.create(name="Store 1",location="Delhi")
+        Inventory.objects.create(store=store,product=product,quantity=2)
 
         response = client.post(
             "/api/orders/",

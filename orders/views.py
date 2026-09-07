@@ -17,62 +17,37 @@ class OrderCreateAPIView(APIView):
         if not store_id:
             return Response(
                 {"error": "store_id is required."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+                status=status.HTTP_400_BAD_REQUEST)
 
         if not isinstance(items, list) or not items:
             return Response(
                 {"error": "items must be a non-empty list."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+                status=status.HTTP_400_BAD_REQUEST)
 
         serializer = OrderSerializer(
-            data={
-                "store": store_id,
-                "items": items,
-            }
-        )
-
-        
+            data={"store": store_id,"items": items,})
 
         serializer.is_valid(raise_exception=True)
-
         validated_items = serializer.validated_data["items"]
-
-
 
         try:
             store = Store.objects.get(id=store_id)
         except Store.DoesNotExist:
             return Response(
                 {"error": "Store not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
+                status=status.HTTP_404_NOT_FOUND)
 
         with transaction.atomic():
-
-            order = Order.objects.create(
-                store=store,
-                status=Order.Status.PENDING
-            )
-
+            order = Order.objects.create(store=store,status=Order.Status.PENDING)
             rejected = False
             inventory_rows = {}
 
             for item in validated_items:
-
                 product_id = item["product_id"]
                 quantity_requested = item["quantity_requested"]
 
                 try:
-                    inventory = (
-                        Inventory.objects
-                        .select_for_update()
-                        .get(
-                            store_id=store_id,
-                            product_id=product_id
-                        )
-                    )
+                    inventory = (Inventory.objects.select_for_update().get(store_id=store_id,product_id=product_id))
                 except Inventory.DoesNotExist:
                     rejected = True
                     continue
@@ -86,10 +61,7 @@ class OrderCreateAPIView(APIView):
                 OrderItem(
                     order=order,
                     product_id=item["product_id"],
-                    quantity_requested=item["quantity_requested"]
-                )
-                for item in validated_items
-            ])
+                    quantity_requested=item["quantity_requested"])for item in validated_items])
 
             if rejected:
                 order.status = Order.Status.REJECTED
@@ -108,5 +80,4 @@ class OrderCreateAPIView(APIView):
 
         return Response(
             OrderSerializer(order).data,
-            status=status.HTTP_201_CREATED
-        )
+            status=status.HTTP_201_CREATED)

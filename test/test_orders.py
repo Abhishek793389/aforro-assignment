@@ -11,20 +11,9 @@ class OrderTest(TestCase):
         client = APIClient()
 
         category = Category.objects.create(name="Test Category")
-        product = Product.objects.create(
-            title="Test Product",
-            price=100,
-            category=category
-        )
-        store = Store.objects.create(
-            name="Test Store",
-            location="Delhi"
-        )
-        Inventory.objects.create(
-            store=store,
-            product=product,
-            quantity=10
-        )
+        product = Product.objects.create(title="Test Product",price=100,category=category)
+        store = Store.objects.create(name="Test Store",location="Delhi")
+        Inventory.objects.create(store=store,product=product,quantity=10)
 
         response = client.post(
             "/api/orders/",

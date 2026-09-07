@@ -19,15 +19,13 @@ class CategoryListCreateAPIView(APIView):
         if not serializer.is_valid():
             return Response(
                 serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
+                status=status.HTTP_400_BAD_REQUEST)
 
         category = serializer.save()
 
         return Response(
             CategorySerializer(category).data,
-            status=status.HTTP_201_CREATED
-        )
+            status=status.HTTP_201_CREATED)
 
 
 class ProductListCreateAPIView(APIView):
@@ -43,12 +41,10 @@ class ProductListCreateAPIView(APIView):
         if not serializer.is_valid():
             return Response(
                 serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
+                status=status.HTTP_400_BAD_REQUEST)
 
         product = serializer.save()
         cache.clear()
         return Response(
             ProductSerializer(product).data,
-            status=status.HTTP_201_CREATED
-        )
+            status=status.HTTP_201_CREATED)

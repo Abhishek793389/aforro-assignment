@@ -6,12 +6,10 @@ from stores.models import Store, Inventory
 
 
 class Command(BaseCommand):
-    help = "Generate dummy categories, products, stores and inventory"
 
     def handle(self, *args, **kwargs):
         fake = Faker()
 
-        # Categories
         categories = [
             "Electronics",
             "Clothing",
@@ -31,11 +29,9 @@ class Command(BaseCommand):
             category, _ = Category.objects.get_or_create(name=name)
             category_objects.append(category)
 
-        self.stdout.write(
-            self.style.SUCCESS("Categories created.")
-        )
+        print("Categories created.")
+        
 
-        # Products
         products = []
 
         for i in range(1000):
@@ -55,12 +51,9 @@ class Command(BaseCommand):
         Product.objects.bulk_create(products)
 
         products = list(Product.objects.all())
+        print("1000 products created.")
 
-        self.stdout.write(
-            self.style.SUCCESS("1000 products created.")
-        )
 
-        # Stores
         stores = []
 
         for i in range(20):
@@ -72,14 +65,10 @@ class Command(BaseCommand):
             )
 
         Store.objects.bulk_create(stores)
-
         stores = list(Store.objects.all())
+        print("20 stores created.")
 
-        self.stdout.write(
-            self.style.SUCCESS("20 stores created.")
-        )
 
-        # Inventory
         inventory = []
 
         for store in stores:
@@ -99,14 +88,6 @@ class Command(BaseCommand):
             batch_size=1000
         )
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                "Inventory created for all stores."
-            )
-        )
+        print("Inventory created for all stores.")
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                "Seed data completed successfully!"
-            )
-        )
+        print("Seed data completed successfully!")
