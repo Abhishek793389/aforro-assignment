@@ -4,8 +4,18 @@
 
 ```bash
 git clone https://github.com/Abhishek793389/aforro-assignment.git
+cd aforro-assignment
 cd aforro
-docker compose up --build
+
+But before run docker build create a .env file inside the root folder where file like readme.md, docker are there.
+And paste this there. Enter you password in the POSTGRES_PASSWORD section.
+    POSTGRES_DB=aforro
+    POSTGRES_USER="postgres"
+    POSTGRES_PASSWORD="password"
+    POSTGRES_HOST=localhost
+    POSTGRES_PORT=5432
+
+ Then run this command "docker compose up --build"
 ```
 
 Run seed data:
